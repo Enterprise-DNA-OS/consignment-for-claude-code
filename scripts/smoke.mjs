@@ -9,11 +9,12 @@ import { run, cents, questions } from "./consignment.mjs";
 import { parseCsv } from "./lib/csv.mjs";
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "consignment-test-"));
-// An explicit empty DATABASE_URL prevents .env loading a real business database.
-process.env.DATABASE_URL = "";
+// Only TEST_DATABASE_URL selects a server; ignore any live DATABASE_URL.
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "";
 process.env.DATA_DIR = path.join(tmp, "db");
 process.env.OUTPUT_DIR = tmp;
-let db;
+let db, testSchema;
+const mode = process.env.TEST_DATABASE_URL ? "postgres" : "pglite";
 let count = 0;
 const ok = (v, msg) => {
   assert.ok(v, msg);
@@ -25,6 +26,15 @@ const equal = (a, b, msg) => {
 };
 try {
   db = await getDb();
+  equal(db.mode, mode);
+  if (mode === "postgres") {
+    testSchema = `consignment_test_${process.pid}_${Date.now()}`;
+    await db.exec(`create schema ${testSchema}`);
+    await db.exec(`set search_path to ${testSchema}`);
+    const url = new URL(process.env.TEST_DATABASE_URL);
+    url.searchParams.set("options", `${url.searchParams.get("options") || ""} -c search_path=${testSchema}`.trim());
+    process.env.DATABASE_URL = url.toString();
+  }
   await migrate(db);
   equal((await migrate(db)).ran, [], "migration repeat");
   const seed = fs.readFileSync(
@@ -394,9 +404,14 @@ try {
   ok(receipts.includes("&lt;script&gt;escaped&lt;/script&gt;"));
   ok(!receipts.includes("<script>escaped</script>"));
   console.log(
-    `PASS: ${count} assertions; all CLI workflows, ten analyses, imports, balance controls, four views and four document types.`,
+    `PASS (${mode}): ${count} assertions; all CLI workflows, ten analyses, imports, balance controls, four views and four document types.`,
   );
 } finally {
   await db?.close();
+  if (testSchema) {
+    const cleanup = await getDb();
+    try { await cleanup.exec(`drop schema ${testSchema} cascade`); }
+    finally { await cleanup.close(); }
+  }
   fs.rmSync(tmp, { recursive: true, force: true });
 }

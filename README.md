@@ -103,6 +103,6 @@ export writes all seven domain record types to portable JSON in exports/. That i
 
 ## Validation
 
-npm test uses a temporary database, ignores live DATABASE_URL and exercises every CLI workflow, all ten analyses, failed and repeated imports, exact split rounding, sale/refund/payout controls, four report types and four document types. The same suite is configured for Windows and Linux on Node 20 and 22 in GitHub Actions. See [validation evidence](docs/validation.md) for actual runs.
+npm test uses a temporary database, ignores live DATABASE_URL and exercises every CLI workflow, all ten analyses, failed and repeated imports, exact split rounding, sale/refund/payout controls, four report types and four document types. The same suite is configured for Windows and Linux on Node 20 and 22 in GitHub Actions. An explicit TEST_DATABASE_URL runs it in a disposable schema on PostgreSQL; the inherited workflow supplies PostgreSQL 17. See [validation evidence](docs/validation.md) for actual runs.
 
 Seven domain tables, five views, UUID ids and update triggers. No frontend framework or server. MIT licence.
