@@ -2,12 +2,40 @@
   {
     "name": "week",
     "title": "This week",
-    "subtitle": "Consignment for Claude Code: what needs attention, rendered by npm run view",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "This week",
+        "sql": "select * from attention_queue order by location,sku"
+      }
+    ]
+  },
+  {
+    "name": "expiry",
+    "title": "Expiry pull",
+    "sections": [
+      {
+        "title": "Expiry pull",
+        "sql": "select * from expiry_queue order by expires_on"
+      }
+    ]
+  },
+  {
+    "name": "payouts",
+    "title": "Consignor balances",
+    "sections": [
+      {
+        "title": "Consignor balances",
+        "sql": "select name,location,currency,opening_cents,earned_cents,paid_cents,due_cents from balances order by location,name"
+      }
+    ]
+  },
+  {
+    "name": "compliance",
+    "title": "Dealer record checks",
+    "sections": [
+      {
+        "title": "Dealer record checks",
+        "sql": "select sku,rule,basis,issue from compliance_issues order by sku"
       }
     ]
   }

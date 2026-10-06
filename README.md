@@ -1,115 +1,108 @@
-<h1 align="center">Consignment for Claude Code</h1>
+# Consignment for Claude Code
 
-<p align="center">
-  <strong>The open-source consignment store system that is just a database and Claude Code.</strong>
-</p>
+The open-source consignor desk for resale stores: intake, splits, stock ageing, expiry decisions and payout reconciliation in a database you own. Built by Enterprise DNA.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free, MIT. Install and change it yourself. | Your fields, agreement rules and ConsignCloud export mapping. Store screens and connections scoped around your operation. | Installed and operated through Omni by Enterprise DNA. One setup fee, then a retainer. |
+| [Quick start](#quick-start) | [Get your version built](https://enterprisedna.co/omni/book?offer=replace-software&utm_medium=github&utm_campaign=consigncloud) | [Book a call](https://enterprisedna.co/omni/book?offer=replace-software&utm_medium=github&utm_campaign=consigncloud) |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your ConsignCloud data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=consigncloud">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/consigncloud?utm_source=github&utm_medium=readme&utm_campaign=consigncloud">How it works</a></td>
-  </tr>
-</table>
+Runs with Claude Code, Codex, OpenCode or Cursor. Every agent follows AGENTS.md and the same command recipes.
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-consigncloud">Instead of ConsignCloud</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+## What the store owns
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
+An item belongs to a consignor, carries an agreed share and has an expiry date. A recorded till sale credits the consignor. A recorded external payment reduces the balance. A full refund reverses the original credit, even after a payout. Currency stays attached to the store. Nothing here moves money or sends messages.
 
----
-
-## What is this
-
-Consignment for Claude Code does the job you pay ConsignCloud for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the ConsignCloud dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays ConsignCloud per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=consigncloud).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+Keep the existing till, payment processor and any legally required dealer record system. This base handles individually tracked consigned items. Store-owned inventory, partial refunds, fees, tax calculation, live commerce sync and public consignor portals require separate work. Read [the scope](docs/why-no-front-end.md).
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Requires Node 20 or newer. These commands work in Windows PowerShell and Linux shells.
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/consignment-for-claude-code.git
 cd consignment-for-claude-code
 npm install
+npm test
 npm run demo
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+The fictional demo has two stores with separate NZD and AUD amounts, three consignors, eight items, two recorded sales and one recorded payout. Stock dates are relative to the seed day. Repeating seed does not overwrite changes.
 
-### Use it with your own Postgres or Supabase
+Read-only reports appear in views/ for the week, expiry pull, payout review and compliance evidence. Printable documents appear in docs-out/: consignor statements, intake records, expiry letters and return or donation records. Disposal records render once an item has been returned or donated. Change the business name, logo and colours in brand.json. Logo paths should be absolute or hosted URLs. Nothing is sent.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+## Commands for the weekly work
 
-## The commands
+/README, /add, /attention, /compliance, /consignors, /customise, /dispose, /documents, /draft-expiry, /expiry-pull, /export, /import, /intake, /inventory, /item, /locations, /log, /metrics, /new-view, /payout, /payout-run, /questions, /refund, /sale, /sales, /split-check, /statement, /stock-age, /weekly-review.
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+The five store rituals are /intake, /expiry-pull, /payout-run, /stock-age and /split-check. /weekly-review combines expiry decisions, balances and missing evidence. Recipes live in .claude/commands. Other agents read those same files.
 
-| Command | What it does |
-|---|---|
-| `/...` | ... |
-
-## Instead of consigncloud
-
-<!-- TODO(author): how to bring data across from ConsignCloud; link docs/replace-consigncloud.md -->
-
-## Architecture
-
-```
-consignment-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
+```bash
+node scripts/consignment.mjs help
+node scripts/consignment.mjs statement "Mara Bell" --json
+node scripts/consignment.mjs sale HR-106 --net=60.00 --reference=POS-NEW --actor=Jo
+node scripts/consignment.mjs payout "Mara Bell" --amount=10.00 --reference=BANK-NEW --actor=Jo
+node scripts/consignment.mjs log HR-101 --actor=Jo --note="Owner approved collection Friday"
 ```
 
-## Built for coding agents
+Only record a sale or payment already completed outside this system. Net is the tax-exclusive amount on which the agreed consignor share is calculated, after applicable discounts. Calculate and reconcile that basis in your till. Splits round once to the nearest cent for each item. Amounts are stored as integer cents. Fees and special rounding policies need explicit custom rules.
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+Names match case-insensitively, ids accept unique prefixes, and item lookups accept SKUs. Ambiguous matches list candidates and exit 1. All commands accept --json. Mutations use parameterised queries and transactions. Payouts lock the consignor before checking available credit. No delete command is supplied. A database administrator can still change records directly, so production needs restricted roles and audit controls.
 
-## Contributing
+## Ten questions from your records
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+Run questions <number> for each answer. These are implemented analyses, not a claim that ConsignCloud cannot produce similar reports. Its own help describes configurable reports and a Data Explorer.
 
-## Want it installed and run for you?
+1. Which expired items lack permission to donate?
+2. Which consignors have old stock and money waiting?
+3. Which sold pieces earned less than their ticket price?
+4. What consignor credit is waiting at each store?
+5. Which regulated items lack a linked dealer record?
+6. Which consignors have no signed terms reference?
+7. Which categories have the oldest available stock?
+8. Which refunds left a consignor owing the store?
+9. Which items expire within the next fortnight?
+10. What retained share came from each consignor?
 
-Enterprise DNA installs Consignment for Claude Code for your business, migrates your ConsignCloud data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+## Your first hour: ten things to ask for
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=consigncloud)
-- Read more: [enterprisedna.co/omni/instead-of/consigncloud](https://enterprisedna.co/omni/instead-of/consigncloud?utm_source=github&utm_medium=readme&utm_campaign=consigncloud)
+1. List the expired stock by store.
+2. Show consignors with money waiting.
+3. Find pieces with a different split from their consignor default.
+4. Show missing agreement references.
+5. Draft a collection letter for Mara Bell.
+6. Prepare a printable consignor statement.
+7. Compare old stock by category and currency.
+8. Find refunds that left negative balances.
+9. Add a rack-location field with /customise.
+10. Add a read-only report of expiring coats with /new-view.
 
-## License
+## Bring ConsignCloud opening records across
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+ConsignCloud Classic exports Excel sheets with selectable columns. Save the accounts and inventory sheets as CSV, confirm their columns, then import with one command:
+
+```bash
+node scripts/consignment.mjs import consigncloud --accounts=accounts.csv --items=items.csv --location="Harbour Resale" --dry-run
+```
+
+Read [the switching guide](docs/replace-consigncloud.md) before removing --dry-run. Column mapping is supported. Opening credit is imported separately from post-cutover sales. The importer does not fabricate historical sales or statutory records. Identical imports are safe to repeat. Changed overlapping snapshots stop for reconciliation.
+
+## Storage, access and backup
+
+Without DATABASE_URL, embedded PGlite stores data in .data/db. Set DATA_DIR to use another directory. Only one embedded process should use it at a time. Set DATABASE_URL to use PostgreSQL and run npm run migrate. Both adapters run the same schema and parameterised queries. This build was exercised locally in embedded mode; PostgreSQL execution is not claimed by that result.
+
+Create a fresh database for your store and never seed live business data. Use add location, then add consignor or import. Shared use requires the owner to configure restricted database roles, TLS, network access, backups and restoration. This base has no web login, staff permission manager or tenant isolation.
+
+export writes all seven domain record types to portable JSON in exports/. That is a record snapshot, not an automatic restore command. Also maintain database-native backups and test recovery. Drafts, exports, .env files and local data are gitignored.
+
+## Dealer and agreement checks
+
+/compliance flags missing agreement references, missing supplier identity references and missing links to dealer records. Regulated NSW items always carry an external-system reminder. [Compliance sources and boundaries](docs/compliance.md) identify which checks reflect official guidance and which are store policies. This system does not establish legal compliance, licence eligibility or approval as dealer software.
+
+## Validation
+
+npm test uses a temporary database, ignores live DATABASE_URL and exercises every CLI workflow, all ten analyses, failed and repeated imports, exact split rounding, sale/refund/payout controls, four report types and four document types. The same suite is configured for Windows and Linux on Node 20 and 22 in GitHub Actions. See [validation evidence](docs/validation.md) for actual runs.
+
+Seven domain tables, five views, UUID ids and update triggers. No frontend framework or server. MIT licence.

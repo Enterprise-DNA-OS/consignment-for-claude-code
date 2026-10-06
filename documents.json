@@ -1,11 +1,64 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "consignor-statement",
+    "title": "Consignor statement",
+    "for_each": "select id,name from consignors",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Balance since opening",
+        "sql": "select name,location,currency,opening_cents,earned_cents,paid_cents,due_cents from balances where id=$1"
+      },
+      {
+        "title": "Recorded sales and refunds",
+        "sql": "select i.sku,s.reference,s.sold_on,l.currency,s.net_cents,s.consignor_cents,s.refunded_on from sales s join items i on i.id=s.item_id join consignors c on c.id=i.consignor_id join locations l on l.id=c.location_id where c.id=$1 order by s.sold_on"
+      },
+      {
+        "title": "Recorded payouts",
+        "sql": "select p.reference,p.paid_on,l.currency,p.amount_cents,p.actor from settlements p join consignors c on c.id=p.consignor_id join locations l on l.id=c.location_id where c.id=$1 order by paid_on"
+      }
+    ]
+  },
+  {
+    "name": "intake-receipt",
+    "title": "Consignment intake record",
+    "for_each": "select id,sku from items",
+    "file": "sku",
+    "sections": [
+      {
+        "title": "Item and agreed share",
+        "sql": "select sku,title,consignor,location,currency,received_on,expires_on,price_cents,split_percent,donation_allowed,dealer_record_ref from stock where id=$1",
+        "note": "This records agreed terms. Keep the signed agreement and required dealer records separately."
+      }
+    ]
+  },
+  {
+    "name": "expiry-letter",
+    "title": "Expiry decision draft",
+    "for_each": "select id,name from consignors",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Collection or agreed disposal decision",
+        "sql": "select sku,title,expires_on,donation_allowed from items where consignor_id=$1 and status='available' and expires_on<=current_date+14 order by expires_on",
+        "note": "Draft only. Confirm the agreement and record the owner decision before disposal."
+      }
+    ]
+  },
+  {
+    "name": "disposal-record",
+    "title": "Return or donation record",
+    "for_each": "select id,sku from items where status in ('returned','donated')",
+    "file": "sku",
+    "sections": [
+      {
+        "title": "Recorded disposal",
+        "sql": "select sku,title,consignor,status,disposed_on from stock where id=$1"
+      },
+      {
+        "title": "Operator notes",
+        "sql": "select actor,note,created_at from events where item_id=$1 order by created_at"
+      }
     ]
   }
 ]

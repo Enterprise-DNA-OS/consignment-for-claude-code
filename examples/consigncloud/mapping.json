@@ -1,0 +1,13 @@
+{
+  "accounts": {
+    "Account ID": "Account ID",
+    "Split": "Split",
+    "Balance": "Balance"
+  },
+  "items": {
+    "SKU": "SKU",
+    "Description": "Description",
+    "Received Date": "Received Date",
+    "Expiration Date": "Expiration Date"
+  }
+}
