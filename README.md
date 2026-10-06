@@ -91,7 +91,7 @@ Read [the switching guide](docs/replace-consigncloud.md) before removing --dry-r
 
 ## Storage, access and backup
 
-Without DATABASE_URL, embedded PGlite stores data in .data/db. Set DATA_DIR to use another directory. Only one embedded process should use it at a time. Set DATABASE_URL to use PostgreSQL and run npm run migrate. Both adapters run the same schema and parameterised queries. This build was exercised locally in embedded mode; PostgreSQL execution is not claimed by that result.
+Without DATABASE_URL, embedded PGlite stores data in .data/db. Set DATA_DIR to use another directory. Only one embedded process should use it at a time. Set DATABASE_URL to use PostgreSQL and run npm run migrate. Both adapters run the same schema and parameterised queries. This build was exercised locally in embedded mode and against PostgreSQL 17 in the remote workflow.
 
 Create a fresh database for your store and never seed live business data. Use add location, then add consignor or import. Shared use requires the owner to configure restricted database roles, TLS, network access, backups and restoration. This base has no web login, staff permission manager or tenant isolation.
 
