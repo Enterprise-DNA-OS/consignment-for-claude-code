@@ -1,7 +1,8 @@
 name: Verify commands
 on:
-  push:
-    branches: [main]
+  # Manual only since 2026-10-18 to save GitHub Actions minutes (Sam). To restore, put back:
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
